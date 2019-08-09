@@ -4,6 +4,8 @@ package com.twu.biblioteca;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -24,13 +26,14 @@ public class BibliotecaAppTest {
     }
 
     @After
-    public void restoreStreams() {
+    public void tearDown() {
         System.setOut(originalOut);
     }
 
     @Test
     public void shouldDisplayWelcomeMessageOnStart() {
         app.start();
-        assertThat(outContent.toString().trim().replaceAll("(\r\n|\n\r|\r|\n)", ""), is("Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!"));
+        assertThat(outContent.toString().trim().replaceAll("(\r\n|\n\r|\r|\n)", ""),
+                is("Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!"));
     }
 }
