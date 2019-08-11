@@ -37,8 +37,14 @@ public class BibliotecaApp {
     public static void main(String[] args) {
         ArrayList<Book> books = new ArrayList<>(
                 Arrays.asList(
-                        new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling"),
-                        new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress", "Steven Pinker"))
+                        new Book(
+                                "Harry Potter and the Philosopher's Stone",
+                                "J.K. Rowling",
+                                "1997"),
+                        new Book(
+                                "Enlightenment Now",
+                                "Steven Pinker",
+                                "2018"))
         );
 
         Library library = new Library(books);
@@ -74,8 +80,13 @@ public class BibliotecaApp {
     }
 
     void displayAllBooks() {
+        outPrinter.format("%s%30s%30s%n", "Title", "Author", "Publication Year");
         for (Book book: library.getBooks()) {
-            outPrinter.println(book.toString());
+            outPrinter.format("%s%30s%30s%n",
+                    book.getTitle(),
+                    book.getAuthor(),
+                    book.getPublicationYear());
         }
     }
+
 }
