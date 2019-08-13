@@ -9,17 +9,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -35,6 +38,9 @@ class BibliotecaAppTest {
     PrintStream errPrinter;
     @Mock
     Scanner scanner;
+
+    @Captor
+    ArgumentCaptor<String> captor;
 
     @BeforeEach
     void setUp() {
@@ -83,9 +89,8 @@ class BibliotecaAppTest {
     }
 
     @Test
-    void displayListOfBooks() {
+    void testThatListOfBooksAreDisplayedInTheCorrectFormat() {
         // given
-
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
 
         // when
@@ -99,26 +104,47 @@ class BibliotecaAppTest {
     }
 
     @Test
-    void checkoutBook() {
+    void testThatACheckedOutBookIsNotDisplayedInTheListOfBooksShownToCustomer() {
         // given
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
-        
-        int bookIndex = 0;
-        String bookTitle = library.getBooks().get(bookIndex).getTitle();
 
+        int bookIndex = 0;
+        Book bookToCheckout = library.getBooks().get(bookIndex);
+        String bookTitle = bookToCheckout.getTitle();
+
+        when(scanner.nextLine()).thenReturn(bookTitle);
         // when
-        app.checkoutBook(bookTitle);
+        try {
+            app.executeMainMenuOption(2);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
 
         // then
-        app.displayAllBooks();
-        verify(outPrinter).format("%s%30s%30s%n", "Title", "Author", "Publication Year");
+        Library libraryAfterBookCheckedOut = app.getLibrary();
 
-        for (int i = 0; i < library.getBooks().size(); i++) {
-            if (i != bookIndex) {
-                Book book = library.getBooks().get(i);
-                verify(outPrinter).println(book.toString());
-            }
+        assertThat(libraryAfterBookCheckedOut.getBooksNotCheckedOut(), not(hasItem(bookToCheckout)));
+    }
+
+    @Test
+    void testThatASuccessMessageIsShownToCustomerWhenSuccessfullyCheckingOutABook() {
+        // given
+
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        int bookIndex = 0;
+        String bookTitle = library.getBooks().get(bookIndex).getTitle();
+        when(scanner.nextLine()).thenReturn(bookTitle);
+        // when
+        try {
+            app.executeMainMenuOption(2);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
         }
-        verifyNoMoreInteractions(outPrinter);
+
+        // then
+        verify(outPrinter,
+                times(library.getBooks().size() + 2)).println(captor.capture());
+        verify(outPrinter).println(captor.getValue());
     }
 }
