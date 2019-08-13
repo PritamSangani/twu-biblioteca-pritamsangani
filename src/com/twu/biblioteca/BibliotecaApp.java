@@ -38,6 +38,10 @@ public class BibliotecaApp {
         this.library = library;
     }
 
+    public Library getLibrary() {
+        return library;
+    }
+
     public static void main(String[] args) {
         ArrayList<Book> books = new ArrayList<>(
                 Arrays.asList(
@@ -81,6 +85,9 @@ public class BibliotecaApp {
             case 2:
                 displayAllBooks();
                 boolean checkoutBookStatus = executeCheckoutBookOption();
+                if (checkoutBookStatus) {
+                    outPrinter.println("Thank you! Enjoy the book");
+                }
                 break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
