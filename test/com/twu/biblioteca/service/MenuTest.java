@@ -24,7 +24,6 @@ class MenuTest {
     void setUp() {
         options = new HashMap<>();
         options.put(1, "List of Books");
-        options.put(2, "List of Movies");
         menu = new Menu(outPrinter, options);
     }
 

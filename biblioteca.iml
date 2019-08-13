@@ -25,7 +25,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" scope="TEST" name="org.hamcrest:hamcrest:2.1" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-core:2.28.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-junit-jupiter:3.0.0" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-inline:2.28.1" level="project" />
   </component>
 </module>
