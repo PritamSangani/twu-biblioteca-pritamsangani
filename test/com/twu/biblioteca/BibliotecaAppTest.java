@@ -102,7 +102,7 @@ class BibliotecaAppTest {
     void checkoutBook() {
         // given
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
-        BibliotecaApp spy = spy(app);
+        
         int bookIndex = 0;
         String bookTitle = library.getBooks().get(bookIndex).getTitle();
 
