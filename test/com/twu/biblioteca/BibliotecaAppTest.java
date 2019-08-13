@@ -10,31 +10,42 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BibliotecaAppTest {
     private BibliotecaApp app;
+    private Library library;
+    private ArrayList<Book> books;
 
     @Mock
     PrintStream outPrinter;
     @Mock
     PrintStream errPrinter;
-
-    private Library library;
+    @Mock
+    Scanner scanner;
 
     @BeforeEach
     void setUp() {
-        app = new BibliotecaApp(outPrinter, errPrinter);
+        books = new ArrayList<>(
+                Arrays.asList(
+                        new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", "1997"),
+                        new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress", "Steven Pinker", "2018"))
+        );
+        library = new Library(books);
+
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner);
     }
 
     @Test
@@ -50,7 +61,7 @@ class BibliotecaAppTest {
     private static Stream<Arguments> shouldDisplayMessageIfInvalidMenuOptionSelectedArguments() {
         return Stream.of(
                 Arguments.of(1, true),
-                Arguments.of(2, false),
+                Arguments.of(2, true),
                 Arguments.of(3, false),
                 Arguments.of(4, false)
         );
@@ -60,8 +71,7 @@ class BibliotecaAppTest {
     @MethodSource("shouldDisplayMessageIfInvalidMenuOptionSelectedArguments")
     void shouldDisplayMessageIfInvalidMenuOptionSelected(int option, boolean validOption)
             throws InvalidMenuOptionException {
-        // given
-        final String INVALID_OPTION_MESSAGE = "Please select a valid option!";
+        // given option
         // when validOption == false
 
         // then
@@ -75,13 +85,8 @@ class BibliotecaAppTest {
     @Test
     void displayListOfBooks() {
         // given
-        ArrayList<Book> books = new ArrayList<>(
-                Arrays.asList(
-                        new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", "1997"),
-                        new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress", "Steven Pinker", "2018"))
-        );
-        library = new Library(books);
-        app = new BibliotecaApp(outPrinter, errPrinter, library);
+
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
 
         // when
         app.displayAllBooks();
@@ -89,9 +94,31 @@ class BibliotecaAppTest {
         // then
         verify(outPrinter).format("%s%30s%30s%n", "Title", "Author", "Publication Year");
         for (Book book: books) {
-            verify(outPrinter).format("%s%30s%30s%n",
-                    book.getTitle(), book.getAuthor(), book.getPublicationYear());
+            verify(outPrinter).println(book.toString());
         }
+    }
 
+    @Test
+    void checkoutBook() {
+        // given
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+        
+        int bookIndex = 0;
+        String bookTitle = library.getBooks().get(bookIndex).getTitle();
+
+        // when
+        app.checkoutBook(bookTitle);
+
+        // then
+        app.displayAllBooks();
+        verify(outPrinter).format("%s%30s%30s%n", "Title", "Author", "Publication Year");
+
+        for (int i = 0; i < library.getBooks().size(); i++) {
+            if (i != bookIndex) {
+                Book book = library.getBooks().get(i);
+                verify(outPrinter).println(book.toString());
+            }
+        }
+        verifyNoMoreInteractions(outPrinter);
     }
 }
