@@ -147,4 +147,23 @@ class BibliotecaAppTest {
                 times(library.getBooks().size() + 2)).println(captor.capture());
         verify(outPrinter).println(captor.getValue());
     }
+
+    @Test
+    void testThatAnUnsuccessfulMessageIsShownToCustomerWhenUnsuccessfullyCheckingOutABook() {
+        // given
+
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        String bookTitle = "No such book";
+        when(scanner.nextLine()).thenReturn(bookTitle);
+        // when
+        try {
+            app.executeMainMenuOption(2);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
+
+        // then
+        verify(errPrinter).println("Sorry, that book is not available");
+    }
 }
