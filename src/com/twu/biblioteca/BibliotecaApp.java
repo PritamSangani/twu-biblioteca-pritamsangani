@@ -85,7 +85,6 @@ public class BibliotecaApp {
                 break;
             case 3:
                 executeReturnBookOption();
-                displayAllBooks();
                 break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
@@ -116,7 +115,7 @@ public class BibliotecaApp {
         outPrinter.println("\nEnter the title of the book you wish to return.");
         String bookTitle = scanner.nextLine();
 
-        returnBook(bookTitle);
+        if (returnBook(bookTitle)) outPrinter.println("Thank you for returning the book");
     }
 
     private Boolean returnBook(String bookTitle) {
