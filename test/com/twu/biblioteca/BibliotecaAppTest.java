@@ -21,8 +21,7 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -145,7 +144,8 @@ class BibliotecaAppTest {
         // then
         verify(outPrinter,
                 times(library.getBooks().size() + 2)).println(captor.capture());
-        verify(outPrinter).println(captor.getValue());
+
+        assertThat(captor.getValue(), is("Thank you! Enjoy the book"));
     }
 
     @Test
@@ -189,5 +189,28 @@ class BibliotecaAppTest {
         Library libraryAfterBookCheckedOut = app.getLibrary();
 
         assertThat(libraryAfterBookCheckedOut.getBooksNotCheckedOut(), hasItem(bookToCheckout));
+    }
+
+    @Test
+    void testThatASuccessMessageIsShownToCustomerWhenSuccessfullyReturningACheckedOutBook() {
+        // given
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        int bookIndex = 0;
+        Book bookToReturn = library.getBooks().get(bookIndex);
+        String bookTitle = bookToReturn.getTitle();
+        app.getLibrary().checkoutBook(bookToReturn);
+        when(scanner.nextLine()).thenReturn(bookTitle);
+        // when
+        try {
+            app.executeMainMenuOption(3);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
+
+        // then
+        verify(outPrinter,
+                times(2)).println(captor.capture());
+        assertThat(captor.getValue(), is("Thank you for returning the book"));
     }
 }
