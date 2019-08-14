@@ -84,10 +84,8 @@ public class BibliotecaApp {
                 break;
             case 2:
                 displayAllBooks();
-                boolean checkoutBookStatus = executeCheckoutBookOption();
-                if (checkoutBookStatus) {
-                    outPrinter.println("Thank you! Enjoy the book");
-                }
+                executeCheckoutBookOption();
+
                 break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
@@ -101,15 +99,16 @@ public class BibliotecaApp {
         }
     }
 
-    private Boolean executeCheckoutBookOption() {
+    private void executeCheckoutBookOption() {
         outPrinter.println("\nSelect a book to checkout");
 
         String bookTitle = scanner.nextLine();
 
-        return checkoutBook(bookTitle);
+        if(checkoutBook(bookTitle)) outPrinter.println("Thank you! Enjoy the book");
+        else errPrinter.println("Sorry, that book is not available");
     }
 
-    Boolean checkoutBook(String bookTitle) {
+    private Boolean checkoutBook(String bookTitle) {
         Optional<Book> bookToCheckout = library.getBookByTitle(bookTitle);
         return bookToCheckout.filter(book -> library.checkoutBook(book)).isPresent();
     }
