@@ -116,6 +116,7 @@ public class BibliotecaApp {
         String bookTitle = scanner.nextLine();
 
         if (returnBook(bookTitle)) outPrinter.println("Thank you for returning the book");
+        else errPrinter.println("That is not a valid book to return.");
     }
 
     private Boolean returnBook(String bookTitle) {
