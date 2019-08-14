@@ -213,4 +213,25 @@ class BibliotecaAppTest {
                 times(2)).println(captor.capture());
         assertThat(captor.getValue(), is("Thank you for returning the book"));
     }
+
+    @Test
+    void testThatAnUnsuccessfulMessageIsShownToCustomerWhenUnsuccessfullyReturningABook() {
+        // given
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        int bookIndex = 0;
+        Book bookToReturn = library.getBooks().get(bookIndex);
+        String bookTitle = bookToReturn.getTitle();
+
+        when(scanner.nextLine()).thenReturn(bookTitle);
+        // when
+        try {
+            app.executeMainMenuOption(3);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
+
+        // then
+        verify(errPrinter).println("That is not a valid book to return.");
+    }
 }
