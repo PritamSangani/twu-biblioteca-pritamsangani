@@ -60,21 +60,24 @@ public class BibliotecaApp {
 
     private void start() {
         displayWelcomeMessage();
+        boolean exitApplication = false;
 
-        menu.displayMenu();
-        try {
-            int option = Integer.parseInt(scanner.nextLine());
-            executeMainMenuOption(option);
-        } catch (InvalidMenuOptionException e) {
-            errPrinter.println(e.getMessage());
-        }
+        do {
+            menu.displayMenu();
+            try {
+                int option = Integer.parseInt(scanner.nextLine());
+                exitApplication = executeMainMenuOption(option);
+            } catch (InvalidMenuOptionException e) {
+                errPrinter.println(e.getMessage());
+            }
+        } while (!exitApplication);
     }
 
     void displayWelcomeMessage() {
         outPrinter.println(WELCOME_MESSAGE);
     }
 
-    void executeMainMenuOption(int option) throws InvalidMenuOptionException {
+    Boolean executeMainMenuOption(int option) throws InvalidMenuOptionException {
         switch (option) {
             case 1:
                 displayAllBooks();
@@ -86,9 +89,12 @@ public class BibliotecaApp {
             case 3:
                 executeReturnBookOption();
                 break;
+            case 4:
+                return true;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
         }
+        return false;
     }
 
     void displayAllBooks() {

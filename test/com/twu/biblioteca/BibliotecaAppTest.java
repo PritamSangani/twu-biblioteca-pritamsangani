@@ -1,6 +1,7 @@
 package com.twu.biblioteca;
 
 import com.twu.biblioteca.helpers.InvalidMenuOptionException;
+import com.twu.biblioteca.helpers.SystemLambda;
 import com.twu.biblioteca.model.Book;
 import com.twu.biblioteca.model.Library;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
+import static com.twu.biblioteca.helpers.SystemLambda.catchSystemExit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -74,16 +76,13 @@ class BibliotecaAppTest {
 
     @ParameterizedTest
     @MethodSource("shouldDisplayMessageIfInvalidMenuOptionSelectedArguments")
-    void shouldDisplayMessageIfInvalidMenuOptionSelected(int option, boolean validOption)
-            throws InvalidMenuOptionException {
+    void shouldDisplayMessageIfInvalidMenuOptionSelected(int option, boolean validOption) {
         // given option
         // when validOption == false
 
         // then
         if (!validOption) {
-            assertThrows(InvalidMenuOptionException.class, () -> {
-                app.executeMainMenuOption(option);
-            });
+            assertThrows(InvalidMenuOptionException.class, () -> app.executeMainMenuOption(option));
         }
     }
 
@@ -233,5 +232,26 @@ class BibliotecaAppTest {
 
         // then
         verify(errPrinter).println("That is not a valid book to return.");
+    }
+
+    @Test
+    void testApplicationExitsWhenQuitApplicationOptionSelected() {
+        // given
+        int statusCode = 0;
+
+        // when
+        try {
+            app.executeMainMenuOption(4);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
+
+        // then
+        try {
+            statusCode = catchSystemExit(() -> System.exit(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertThat(statusCode, is(0));
     }
 }
