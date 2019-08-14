@@ -19,8 +19,6 @@ public class BibliotecaApp {
     private PrintStream errPrinter = System.err;
     private Scanner scanner = new Scanner(System.in);
 
-    private BibliotecaApp() { }
-
     private BibliotecaApp(Library library) {
         this.library = library;
     }
@@ -38,7 +36,7 @@ public class BibliotecaApp {
         this.library = library;
     }
 
-    public Library getLibrary() {
+    Library getLibrary() {
         return library;
     }
 
@@ -65,9 +63,8 @@ public class BibliotecaApp {
 
         menu.displayMenu();
         try {
-            int option = scanner.nextInt();
+            int option = Integer.parseInt(scanner.nextLine());
             executeMainMenuOption(option);
-            scanner.nextLine();
         } catch (InvalidMenuOptionException e) {
             errPrinter.println(e.getMessage());
         }
@@ -85,7 +82,10 @@ public class BibliotecaApp {
             case 2:
                 displayAllBooks();
                 executeCheckoutBookOption();
-
+                break;
+            case 3:
+                executeReturnBookOption();
+                displayAllBooks();
                 break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
@@ -101,7 +101,6 @@ public class BibliotecaApp {
 
     private void executeCheckoutBookOption() {
         outPrinter.println("\nSelect a book to checkout");
-
         String bookTitle = scanner.nextLine();
 
         if(checkoutBook(bookTitle)) outPrinter.println("Thank you! Enjoy the book");
@@ -113,4 +112,16 @@ public class BibliotecaApp {
         return bookToCheckout.filter(book -> library.checkoutBook(book)).isPresent();
     }
 
+    private void executeReturnBookOption() {
+        outPrinter.println("\nEnter the title of the book you wish to return.");
+        String bookTitle = scanner.nextLine();
+
+        returnBook(bookTitle);
+    }
+
+    private Boolean returnBook(String bookTitle) {
+        Optional<Book> bookToReturn = library.getBookByTitle(bookTitle);
+
+        return bookToReturn.filter(book -> library.returnBook(book)).isPresent();
+    }
 }

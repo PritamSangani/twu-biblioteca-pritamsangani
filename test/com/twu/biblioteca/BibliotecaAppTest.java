@@ -166,4 +166,28 @@ class BibliotecaAppTest {
         // then
         verify(errPrinter).println("Sorry, that book is not available");
     }
+
+    @Test
+    void testThatAReturnedBookIsDisplayedInListOfBooksShownToCustomer() {
+        // given
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        int bookIndex = 0;
+        Book bookToCheckout = library.getBooks().get(bookIndex);
+        String bookTitle = bookToCheckout.getTitle();
+        app.getLibrary().checkoutBook(bookToCheckout);
+
+        when(scanner.nextLine()).thenReturn(bookTitle);
+        // when
+        try {
+            app.executeMainMenuOption(3);
+        } catch (InvalidMenuOptionException e) {
+            e.printStackTrace();
+        }
+
+        // then
+        Library libraryAfterBookCheckedOut = app.getLibrary();
+
+        assertThat(libraryAfterBookCheckedOut.getBooksNotCheckedOut(), hasItem(bookToCheckout));
+    }
 }
