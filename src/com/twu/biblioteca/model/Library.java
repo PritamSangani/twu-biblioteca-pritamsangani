@@ -37,4 +37,13 @@ public class Library {
             return true;
         }
     }
+
+    public boolean returnBook(Book bookToReturn) {
+        if (bookToReturn.isCheckedOut()) {
+            bookToReturn.setCheckedOut(false);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
