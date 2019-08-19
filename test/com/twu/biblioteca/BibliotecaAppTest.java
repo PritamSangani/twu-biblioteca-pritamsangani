@@ -1,13 +1,12 @@
 package com.twu.biblioteca;
 
 import com.twu.biblioteca.helpers.InvalidMenuOptionException;
-import com.twu.biblioteca.helpers.SystemLambda;
 import com.twu.biblioteca.model.Book;
 import com.twu.biblioteca.model.Library;
+import com.twu.biblioteca.model.LibraryItem;
 import com.twu.biblioteca.model.Movie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,6 +20,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.twu.biblioteca.helpers.SystemLambda.catchSystemExit;
@@ -33,8 +33,7 @@ import static org.mockito.Mockito.*;
 class BibliotecaAppTest {
     private BibliotecaApp app;
     private Library library;
-    private ArrayList<Book> books;
-    private ArrayList<Movie> movies;
+    private ArrayList<LibraryItem> inventory;
 
     @Mock
     PrintStream outPrinter;
@@ -48,17 +47,14 @@ class BibliotecaAppTest {
 
     @BeforeEach
     void setUp() {
-        books = new ArrayList<>(
+        inventory = new ArrayList<>(
                 Arrays.asList(
                         new Book("Harry Potter and the Philosopher's Stone",
                                 "J.K. Rowling",
                                 "1997"),
                         new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress",
                                 "Steven Pinker",
-                                "2018"))
-        );
-        movies = new ArrayList<Movie>(
-                Arrays.asList(
+                                "2018"),
                         new Movie("Fast and Furious: Hobbs & Shaw",
                                 "David Leitch",
                                 "2019",
@@ -66,11 +62,10 @@ class BibliotecaAppTest {
                         new Movie("Avengers: Infinity War",
                                 "Anthony Russo, Joe Russo",
                                 "2018",
-                                9)
-                )
+                                9))
         );
 
-        library = new Library(books, movies);
+        library = new Library(inventory);
 
         app = new BibliotecaApp(outPrinter, errPrinter, scanner);
     }
@@ -112,6 +107,9 @@ class BibliotecaAppTest {
     void testThatListOfBooksAreDisplayedInTheCorrectFormat() {
         // given
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+        ArrayList<Book> books = (ArrayList<Book>) inventory.stream()
+                .filter(libraryItem -> libraryItem instanceof Book)
+                .map(libraryItem -> (Book) libraryItem).collect(Collectors.toList());
 
         // when
         app.displayAllBooks();
@@ -172,7 +170,6 @@ class BibliotecaAppTest {
     @Test
     void testThatAnUnsuccessfulMessageIsShownToCustomerWhenUnsuccessfullyCheckingOutABook() {
         // given
-
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
 
         String bookTitle = "No such book";
@@ -282,6 +279,10 @@ class BibliotecaAppTest {
     void testThatListOfMoviesAreDisplayedInTheCorrectFormat() {
         // given
         app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        ArrayList<Movie> movies = (ArrayList<Movie>) inventory.stream()
+                .filter(libraryItem -> libraryItem instanceof Movie)
+                .map(libraryItem -> (Movie) libraryItem).collect(Collectors.toList());
 
         // when
         app.displayAllMovies();

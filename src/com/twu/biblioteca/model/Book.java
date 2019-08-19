@@ -1,20 +1,13 @@
 package com.twu.biblioteca.model;
 
-public class Book {
-    private String title;
+public class Book extends LibraryItem {
     private String author;
     private String publicationYear;
-    private boolean checkedOut;
 
     public Book(String title, String author, String publicationYear) {
-        this.title = title;
+        super(title, false);
         this.author = author;
         this.publicationYear = publicationYear;
-        this.checkedOut = false;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getAuthor() {
@@ -25,16 +18,8 @@ public class Book {
         return publicationYear;
     }
 
-    public boolean isCheckedOut() {
-        return checkedOut;
-    }
-
-    public void setCheckedOut(boolean checkedOut) {
-        this.checkedOut = checkedOut;
-    }
-
     @Override
     public String toString() {
-        return String.format("%s%30s%30s", title, author, publicationYear);
+        return String.format("%s%30s%30s", super.title, author, publicationYear);
     }
 }
