@@ -4,8 +4,10 @@ import com.twu.biblioteca.helpers.InvalidMenuOptionException;
 import com.twu.biblioteca.helpers.SystemLambda;
 import com.twu.biblioteca.model.Book;
 import com.twu.biblioteca.model.Library;
+import com.twu.biblioteca.model.Movie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,6 +34,7 @@ class BibliotecaAppTest {
     private BibliotecaApp app;
     private Library library;
     private ArrayList<Book> books;
+    private ArrayList<Movie> movies;
 
     @Mock
     PrintStream outPrinter;
@@ -47,10 +50,27 @@ class BibliotecaAppTest {
     void setUp() {
         books = new ArrayList<>(
                 Arrays.asList(
-                        new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", "1997"),
-                        new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress", "Steven Pinker", "2018"))
+                        new Book("Harry Potter and the Philosopher's Stone",
+                                "J.K. Rowling",
+                                "1997"),
+                        new Book("Enlightenment Now: The Case for Reason, Science, Humanism, and Progress",
+                                "Steven Pinker",
+                                "2018"))
         );
-        library = new Library(books);
+        movies = new ArrayList<Movie>(
+                Arrays.asList(
+                        new Movie("Fast and Furious: Hobbs & Shaw",
+                                "David Leitch",
+                                "2019",
+                                7),
+                        new Movie("Avengers: Infinity War",
+                                "Anthony Russo, Joe Russo",
+                                "2018",
+                                9)
+                )
+        );
+
+        library = new Library(books, movies);
 
         app = new BibliotecaApp(outPrinter, errPrinter, scanner);
     }
@@ -67,10 +87,12 @@ class BibliotecaAppTest {
 
     private static Stream<Arguments> shouldDisplayMessageIfInvalidMenuOptionSelectedArguments() {
         return Stream.of(
+                Arguments.of(-1, false),
+                Arguments.of(0, true),
                 Arguments.of(1, true),
                 Arguments.of(2, true),
-                Arguments.of(3, false),
-                Arguments.of(4, false)
+                Arguments.of(3, true),
+                Arguments.of(4, true)
         );
     }
 
@@ -253,5 +275,21 @@ class BibliotecaAppTest {
             e.printStackTrace();
         }
         assertThat(statusCode, is(0));
+    }
+
+    // Release 2
+    @Test
+    void testThatListOfMoviesAreDisplayedInTheCorrectFormat() {
+        // given
+        app = new BibliotecaApp(outPrinter, errPrinter, scanner, library);
+
+        // when
+        app.displayAllMovies();
+
+        // then
+        verify(outPrinter).format("%s%30s%30s%30s%n", "Title", "Director", "Release Year", "Rating");
+        for (Movie movie : movies) {
+            verify(outPrinter).println(movie.toString());
+        }
     }
 }
