@@ -14,6 +14,8 @@ public class Menu {
         options.put(2, "Checkout a book");
         options.put(3, "Return a book");
         options.put(4, "List of Movies");
+        options.put(5, "Checkout a movie");
+
     }
 
     Menu(PrintStream outPrinter, HashMap<Integer, String> options) {

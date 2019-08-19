@@ -16,19 +16,13 @@ import java.util.Scanner;
 public class BibliotecaApp {
     private static final String WELCOME_MESSAGE = "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!";
     private Menu menu = new Menu();
-    private Library library = new Library();
+    private Library library;
     private PrintStream outPrinter = System.out;
     private PrintStream errPrinter = System.err;
     private Scanner scanner = new Scanner(System.in);
 
     private BibliotecaApp(Library library) {
         this.library = library;
-    }
-
-    BibliotecaApp(PrintStream outPrinter, PrintStream errPrinter, Scanner scanner) {
-        this.outPrinter = outPrinter;
-        this.errPrinter = errPrinter;
-        this.scanner = scanner;
     }
 
     BibliotecaApp(PrintStream outPrinter, PrintStream errPrinter, Scanner scanner, Library library) {
@@ -91,7 +85,7 @@ public class BibliotecaApp {
         outPrinter.println(WELCOME_MESSAGE);
     }
 
-    Boolean executeMainMenuOption(int option) throws InvalidMenuOptionException {
+    boolean executeMainMenuOption(int option) throws InvalidMenuOptionException {
         // return true if quit application otherwise return false
         switch (option) {
             case 0:
@@ -108,6 +102,10 @@ public class BibliotecaApp {
                 break;
             case 4:
                 displayAllMovies();
+                break;
+            case 5:
+                displayAllMovies();
+                executeCheckoutMovieOption();
                 break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
@@ -130,7 +128,7 @@ public class BibliotecaApp {
         else errPrinter.println("Sorry, that book is not available");
     }
 
-    private Boolean checkoutBook(String bookTitle) {
+    private boolean checkoutBook(String bookTitle) {
         Optional<Book> bookToCheckout = library.getBookByTitle(bookTitle);
         return bookToCheckout.filter(book -> library.checkoutBook(book)).isPresent();
     }
@@ -143,7 +141,7 @@ public class BibliotecaApp {
         else errPrinter.println("That is not a valid book to return.");
     }
 
-    private Boolean returnBook(String bookTitle) {
+    private boolean returnBook(String bookTitle) {
         Optional<Book> bookToReturn = library.getBookByTitle(bookTitle);
 
         return bookToReturn.filter(book -> library.returnBook(book)).isPresent();
@@ -153,8 +151,21 @@ public class BibliotecaApp {
     void displayAllMovies() {
         outPrinter.format("%s%30s%30s%30s%n", "Title", "Director", "Release Year", "Rating");
 
-        for (Movie movie: library.getMovies()) {
+        for (Movie movie: library.getMoviesNotCheckedOut()) {
             outPrinter.println(movie.toString());
         }
+    }
+
+    private void executeCheckoutMovieOption() {
+        outPrinter.println("\nSelect a movie to check out");
+        String movieTitle = scanner.nextLine();
+
+        if(checkoutMovie(movieTitle)) outPrinter.println("Thank you! Enjoy the movie");
+        else errPrinter.println("Sorry, that movie is not available");
+    }
+
+    private boolean checkoutMovie(String movieTitle) {
+        Optional<Movie> movieToCheckout = library.getMovieByTitle(movieTitle);
+        return movieToCheckout.filter(movie -> library.checkoutMovie(movie)).isPresent();
     }
 }
