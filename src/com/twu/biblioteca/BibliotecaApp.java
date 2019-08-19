@@ -3,6 +3,7 @@ package com.twu.biblioteca;
 import com.twu.biblioteca.helpers.InvalidMenuOptionException;
 import com.twu.biblioteca.model.Book;
 import com.twu.biblioteca.model.Library;
+import com.twu.biblioteca.model.LibraryItem;
 import com.twu.biblioteca.model.Movie;
 import com.twu.biblioteca.service.Menu;
 
@@ -42,7 +43,7 @@ public class BibliotecaApp {
     }
 
     public static void main(String[] args) {
-        ArrayList<Book> books = new ArrayList<>(
+        ArrayList<LibraryItem> inventory = new ArrayList<>(
                 Arrays.asList(
                         new Book(
                                 "Harry Potter and the Philosopher's Stone",
@@ -51,11 +52,7 @@ public class BibliotecaApp {
                         new Book(
                                 "Enlightenment Now",
                                 "Steven Pinker",
-                                "2018"))
-        );
-
-        ArrayList<Movie> movies = new ArrayList<>(
-                Arrays.asList(
+                                "2018"),
                         new Movie("Fast and Furious: Hobbs & Shaw",
                                 "David Leitch",
                                 "2019",
@@ -63,11 +60,10 @@ public class BibliotecaApp {
                         new Movie("Avengers: Infinity War",
                                 "Anthony Russo, Joe Russo",
                                 "2018",
-                                9)
-                )
+                                9))
         );
 
-        Library library = new Library(books, movies);
+        Library library = new Library(inventory);
         BibliotecaApp app = new BibliotecaApp(library);
         app.start();
     }

@@ -5,36 +5,41 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Library {
-    private ArrayList<Book> books;
-    private ArrayList<Movie> movies;
+
+    private ArrayList<LibraryItem> inventory;
 
     public Library() {
-        this.books = new ArrayList<>();
-        this.movies = new ArrayList<>();
+        this.inventory = new ArrayList<>();
     }
 
-    public Library(ArrayList<Book> books, ArrayList<Movie> movies) {
-        this.books = books;
-        this.movies = movies;
+    public Library(ArrayList<LibraryItem> inventory) {
+        this.inventory = inventory;
     }
 
     public ArrayList<Book> getBooks() {
-        return this.books;
+        return (ArrayList<Book>) this.inventory.stream()
+                .filter(libraryItem -> libraryItem instanceof Book)
+                .map(libraryItem -> (Book) libraryItem)
+                .collect(Collectors.toList());
     }
 
     public ArrayList<Movie> getMovies() {
-        return movies;
+        return (ArrayList<Movie>) this.inventory.stream()
+                .filter(libraryItem -> libraryItem instanceof Movie)
+                .map(libraryItem -> (Movie) libraryItem)
+                .collect(Collectors.toList());
     }
 
     public ArrayList<Book> getBooksNotCheckedOut() {
-        return (ArrayList<Book>) this.books.stream()
-                .filter(book -> !book.isCheckedOut()).collect(Collectors.toList());
+        return (ArrayList<Book>) getBooks().stream()
+                .filter(book -> !book.isCheckedOut())
+                .collect(Collectors.toList());
     }
 
-
     public Optional<Book> getBookByTitle(String bookTitle) {
-        return books.stream()
-                .filter(book -> book.getTitle().equalsIgnoreCase(bookTitle)).findFirst();
+        return getBooks().stream()
+                .filter(book -> book.getTitle().equalsIgnoreCase(bookTitle))
+                .findFirst();
     }
 
 
