@@ -36,18 +36,38 @@ public class Library {
                 .collect(Collectors.toList());
     }
 
+    public ArrayList<Movie> getMoviesNotCheckedOut() {
+        return (ArrayList<Movie>) getMovies().stream()
+                .filter(movie -> !movie.isCheckedOut())
+                .collect(Collectors.toList());
+    }
+
     public Optional<Book> getBookByTitle(String bookTitle) {
         return getBooks().stream()
                 .filter(book -> book.getTitle().equalsIgnoreCase(bookTitle))
                 .findFirst();
     }
 
+    public Optional<Movie> getMovieByTitle(String movieTitle) {
+        return getMovies().stream()
+                .filter(movie -> movie.getTitle().equalsIgnoreCase(movieTitle))
+                .findFirst();
+    }
 
     public boolean checkoutBook(Book bookToCheckout) {
         if (bookToCheckout.isCheckedOut()) {
             return false;
         } else {
             bookToCheckout.setCheckedOut(true);
+            return true;
+        }
+    }
+
+    public boolean checkoutMovie(Movie movieToCheckout) {
+        if (movieToCheckout.isCheckedOut()) {
+            return false;
+        } else {
+            movieToCheckout.setCheckedOut(true);
             return true;
         }
     }
