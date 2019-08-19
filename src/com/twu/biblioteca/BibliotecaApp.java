@@ -3,6 +3,7 @@ package com.twu.biblioteca;
 import com.twu.biblioteca.helpers.InvalidMenuOptionException;
 import com.twu.biblioteca.model.Book;
 import com.twu.biblioteca.model.Library;
+import com.twu.biblioteca.model.Movie;
 import com.twu.biblioteca.service.Menu;
 
 import java.io.PrintStream;
@@ -53,7 +54,20 @@ public class BibliotecaApp {
                                 "2018"))
         );
 
-        Library library = new Library(books);
+        ArrayList<Movie> movies = new ArrayList<>(
+                Arrays.asList(
+                        new Movie("Fast and Furious: Hobbs & Shaw",
+                                "David Leitch",
+                                "2019",
+                                7),
+                        new Movie("Avengers: Infinity War",
+                                "Anthony Russo, Joe Russo",
+                                "2018",
+                                9)
+                )
+        );
+
+        Library library = new Library(books, movies);
         BibliotecaApp app = new BibliotecaApp(library);
         app.start();
     }
@@ -67,8 +81,12 @@ public class BibliotecaApp {
             try {
                 int option = Integer.parseInt(scanner.nextLine());
                 exitApplication = executeMainMenuOption(option);
-            } catch (InvalidMenuOptionException e) {
-                errPrinter.println(e.getMessage());
+            } catch (InvalidMenuOptionException | NumberFormatException e) {
+                if (e instanceof NumberFormatException) {
+                    errPrinter.println("Please enter a numeric value when choosing a menu option.");
+                } else {
+                    errPrinter.println(e.getMessage());
+                }
             }
         } while (!exitApplication);
     }
@@ -78,7 +96,10 @@ public class BibliotecaApp {
     }
 
     Boolean executeMainMenuOption(int option) throws InvalidMenuOptionException {
+        // return true if quit application otherwise return false
         switch (option) {
+            case 0:
+                return true;
             case 1:
                 displayAllBooks();
                 break;
@@ -90,7 +111,8 @@ public class BibliotecaApp {
                 executeReturnBookOption();
                 break;
             case 4:
-                return true;
+                displayAllMovies();
+                break;
             default:
                 throw new InvalidMenuOptionException("Please select a valid option!");
         }
@@ -129,5 +151,14 @@ public class BibliotecaApp {
         Optional<Book> bookToReturn = library.getBookByTitle(bookTitle);
 
         return bookToReturn.filter(book -> library.returnBook(book)).isPresent();
+    }
+
+    // Release 2
+    void displayAllMovies() {
+        outPrinter.format("%s%30s%30s%30s%n", "Title", "Director", "Release Year", "Rating");
+
+        for (Movie movie: library.getMovies()) {
+            outPrinter.println(movie.toString());
+        }
     }
 }

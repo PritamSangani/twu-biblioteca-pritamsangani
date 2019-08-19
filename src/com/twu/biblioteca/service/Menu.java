@@ -9,10 +9,11 @@ public class Menu {
 
     public Menu () {
         options = new HashMap<>();
+        options.put(0, "Quit the application");
         options.put(1, "List of Books");
         options.put(2, "Checkout a book");
         options.put(3, "Return a book");
-        options.put(4, "Quit the application");
+        options.put(4, "List of Movies");
     }
 
     Menu(PrintStream outPrinter, HashMap<Integer, String> options) {
